@@ -1,14 +1,21 @@
 import http from "http";
 import { parse } from "url";
 import fs from "fs/promises";
+import * as path from "node:path";
+import { fileURLToPath, pathToFileURL } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const baseDir = path.join(__dirname, "/routes");
 
 async function loadRouters() {
-  const files = await fs.readdir("./routes");
+  const files = await fs.readdir(baseDir);
   const routers = [];
 
   for (const file of files) {
     if (file.endsWith("Router.js")) {
-      const module = await import(`./routes/${file}`);
+      const fpath = pathToFileURL(path.join(baseDir, file));
+      const module = await import(fpath);
       const routerInstance = new module.default();
       routers.push(routerInstance);
     }
