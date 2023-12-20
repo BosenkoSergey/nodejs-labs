@@ -24,25 +24,6 @@ async function loadRouters() {
   return routers;
 }
 
-function handleContentTypes(req, res, handlers) {
-  let data = "";
-
-  req.on("data", (chunk) => {
-    data += chunk;
-  });
-
-  req.on("end", () => {
-    const contentType = req.headers["content-type"];
-
-    if (handlers[contentType]) {
-      handlers[contentType](data);
-    } else {
-      res.writeHead(415, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: "Unsupported Media Type" }));
-    }
-  });
-}
-
 const router = {
   async handleRequest(req, res) {
     const { pathname } = parse(req.url, true);
